@@ -58,7 +58,7 @@ Why run it in the background and where is the output of the program you say? Wel
 #### 🔍 Inspect the script at runtime
 For inspecting the installation on realtime type:
 ```bash
-less +F /tmp/kiab-install.log
+less +F /tmp/k8splay-install.log
 ```
 This will open the installation log and read from the input stream. To exit just type `CTRL + C` and then `quit`.
 
