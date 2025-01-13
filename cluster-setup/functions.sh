@@ -604,7 +604,7 @@ helmInstall() {
 
 helmMicrok8sAlias() {
   if [ "$helm_microk8s_alias" = true ]; then
-    printInfoSection "Setting up an alias for micrkok8s"
+    printInfoSection "Setting up a HELM alias for micrkok8s via 'snap alias microk8s.helm helm'"
     printInfo "Add alias to Helm (Helm binaries are already installed in microk8s)"
     snap alias microk8s.helm helm
   fi
@@ -1047,6 +1047,7 @@ doInstallation() {
 
   # K8s System components
   istioInstall
+  helmMicrok8sAlias
   helmInstall
   certmanagerInstall
 
