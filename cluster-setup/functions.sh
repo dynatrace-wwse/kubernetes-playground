@@ -25,7 +25,7 @@ TEASER_IMAGE="shinojosa/k8splaywebshell:v1.1"
 # https://github.com/ubuntu/microk8s/releases
 # snap info microk8s
 MICROK8S_CHANNEL="1.32/stable"
-K8S_PLAY_REPO="https://github.com/sergiohinojosa/kubernetes-playground.git"
+K8S_PLAY_REPO="https://github.com/dynatrace-wwse/kubernetes-playground.git"
 DEVLOVE_ET_REPO="https://github.com/dynatrace-perfclinics/devlove-easytravel-pipelines.git"
 
 # - The user to run the commands from. Will be overwritten when executing this shell with sudo, this is just needed when spinning machines programatically and running the script with root without an interactive shell
@@ -645,7 +645,7 @@ certmanagerEnable() {
 }
 
 keptndemoDeployCartsloadgenerator() {
-  # https://github.com/sergiohinojosa/Kubernetes-Play/cluster-setup/resources/cartsloadgenerator
+  # https://github.com/dynatrace-wwse/Kubernetes-Play/cluster-setup/resources/cartsloadgenerator
   if [ "$keptndemo_cartsload" = true ]; then
     printInfoSection "Deploy Cartsload Generator"
     bashas "kubectl create deploy cartsloadgen --image=shinojosa/cartsloadgen:keptn"

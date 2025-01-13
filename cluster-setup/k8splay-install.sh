@@ -61,7 +61,7 @@ CERTMANAGER_EMAIL=
 # - Kubernetes Playground release
 PLAY_RELEASE="main"
 # - Functions file location
-FUNCTIONS_FILE_REPO="https://raw.githubusercontent.com/sergiohinojosa/kubernetes-playground/${PLAY_RELEASE}/cluster-setup/functions.sh"
+FUNCTIONS_FILE_REPO="https://raw.githubusercontent.com/dynatrace-wwse/kubernetes-playground/${PLAY_RELEASE}/cluster-setup/functions.sh"
 
 ## ----  Write all output to the logfile ----
 if [ "$pipe_log" = true ]; then

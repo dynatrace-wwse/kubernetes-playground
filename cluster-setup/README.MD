@@ -40,7 +40,7 @@ The functions.sh was developed under Ubuntu but this does not mean it won't work
 Now let's download the `k8splay-install.sh` file and make it executable.
 
 ```bash
-curl -O https://raw.githubusercontent.com/sergiohinojosa/kubernetes-playground/master/cluster-setup/k8splay-install.sh
+curl -O https://raw.githubusercontent.com/dynatrace-wwse/kubernetes-playground/master/cluster-setup/k8splay-install.sh
 chmod +x k8splay-install.sh
 ```
 > You dont need to clone all the repo, only download the **k8splay-install.sh** file. When executing it, it'll take care of the rest and load the resources from github.
@@ -53,7 +53,7 @@ sudo bash -c './k8splay-install.sh &'
 ```
 And that was it! Yes that easy!  Now if you notice is that there is an & in the command. This command will run installation in a bash shell as sudo, will prompt you for the password and will send the job to the background. You will not see any output since stdout and stderr are piped to a logfile which is located by default in **/tmp/k8splay-install.log** 
 
-Why run it in the background and where is the output of the program you say? Well, k8splay is actually optimized to be executed for non-interactive shells at the initialization of an instance. This is done programmatically passing the script as [user data](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) while creating dynatrace environments and spinning multiple instances for each student. This is achieved with the [Dynatrace Rest Tenant Automation](https://github.com/sergiohinojosa/Dynatrace-REST-Tenant-Automation) program. Yes, we love ❤️ automation 🤖 and the customization, creation and configuration of environments and instances is done programmatically.
+Why run it in the background and where is the output of the program you say? Well, k8splay is actually optimized to be executed for non-interactive shells at the initialization of an instance. This is done programmatically passing the script as [user data](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) while creating dynatrace environments and spinning multiple instances for each student. This is achieved with the [Dynatrace Rest Tenant Automation](https://github.com/dynatrace-wwse/Dynatrace-REST-Tenant-Automation) program. Yes, we love ❤️ automation 🤖 and the customization, creation and configuration of environments and instances is done programmatically.
 
 #### 🔍 Inspect the script at runtime
 For inspecting the installation on realtime type:
@@ -74,7 +74,7 @@ This will open the installation log and read from the input stream. To exit just
 7. Review it and launch your instance.
 
 ### Spin your preconfigured K8s-Play machine with userdata (automated)
-- Description to be added. Please see the [Dynatrace Rest Tenant Automation project](https://github.com/sergiohinojosa/Dynatrace-REST-Tenant-Automation) for reference. The RTA project can spin as many instances as you want by providing a simple CSV file. It will also create and configure Dynatrace environments for each CSV entry, 😍 perfect for delivering workshops 👨‍💻. If you are interested in a workshop get in contact with us. 
+- Description to be added. Please see the [Dynatrace Rest Tenant Automation project](https://github.com/dynatrace-wwse/Dynatrace-REST-Tenant-Automation) for reference. The RTA project can spin as many instances as you want by providing a simple CSV file. It will also create and configure Dynatrace environments for each CSV entry, 😍 perfect for delivering workshops 👨‍💻. If you are interested in a workshop get in contact with us. 
 
 
 

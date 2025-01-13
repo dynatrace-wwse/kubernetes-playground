@@ -44,7 +44,7 @@ echo "${CYAN}Recommended Kubernetes Learning path: ${NORMAL} "
 echo "https://dynatrace.sharepoint.com/sites/SE/expertgroups/kubernetes/SitePages/Kubernetes-learning-path.aspx"
 echo
 echo "${CYAN}More information about this Playground: ${NORMAL}"
-echo "https://github.com/sergiohinojosa/kubernetes-playground"
+echo "https://github.com/dynatrace-wwse/kubernetes-playground"
 echo
 echo "${CYAN}Apps/Endpoints exposed via Ingress Gateway [kubectl get ing -A]:${NORMAL}"
 echo " press [Control] and click on the URL to open the Endpoint in your browser            "
