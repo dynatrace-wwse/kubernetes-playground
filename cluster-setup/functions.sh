@@ -12,8 +12,6 @@ PLAY_RELEASE="main"
 CERTMANAGER_VERSION=1.11.0
 #https://istio.io/latest/news/releases/
 ISTIO_VERSION=1.14.5
-# https://github.com/helm/helm/releases
-HELM_VERSION=3.10.2
 # https://github.com/keptn/keptn
 KEPTN_VERSION=0.19.3
 # https://github.com/keptn-contrib/dynatrace-service
@@ -24,6 +22,9 @@ KEPTN_EXAMPLES_BRANCH="0.14.0"
 TEASER_IMAGE="shinojosa/k8splaywebshell:v1.1"
 # https://github.com/ubuntu/microk8s/releases
 # snap info microk8s
+
+K3S_VERSION="v1.29.10+k3s1"
+
 MICROK8S_CHANNEL="1.32/stable"
 K8S_PLAY_REPO="https://github.com/dynatrace-wwse/kubernetes-playground.git"
 DEVLOVE_ET_REPO="https://github.com/dynatrace-perfclinics/devlove-easytravel-pipelines.git"
@@ -71,6 +72,7 @@ enable_k8dashboard=false
 enable_registry=false
 istio_install=false
 helm_install=false
+helm_microk8s_alias=false
 certmanager_install=false
 certmanager_enable=false
 keptn_install=false
@@ -125,8 +127,8 @@ installationBundleK8sBasic() {
 
   update_ubuntu=true
   docker_install=true
-  microk8s_install=true
-  helm_microk8s_alias=true
+  k3s_install=true
+  helm_install=true
   resources_clone=true
   setup_aliases=true
   k9s_install=true
@@ -143,7 +145,7 @@ installationBundleK8sPlayStandard() {
 
   update_ubuntu=true
   docker_install=true
-  microk8s_install=true
+  k3s_install=true
   helm_install=true
   istio_install=true
   resources_clone=true
@@ -174,7 +176,7 @@ installationBundleDemo() {
   selected_bundle="installationBundleDemo"
   update_ubuntu=true
   docker_install=true
-  microk8s_install=true
+  k3s_install=true
   setup_aliases=true
   k9s_install=true
 
@@ -508,6 +510,28 @@ setupMagicDomainPublicIp() {
   bashas "kubectl create configmap -n default domain --from-literal=domain=${DOMAIN}"
 }
 
+
+k3sInstall(){
+  if [ "$k3s_install" = true ]; then
+    printInfoSection "Installing K3s Version $K3S_VERSION with Traefik disabled"
+    bashas "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC=\"--write-kubeconfig-mode 644 --disable traefik\" sh -"
+
+    printInfo "K3s status"
+    systemctl status k3s
+  
+    printInfo "Create kubectl file for the user"
+
+    homedirectory=$(eval echo ~$USER)
+    bashas "mkdir $homedirectory/.kube"
+    bashas "kubectl config view --raw > $homedirectory/.kube/config"
+    bashas "chmod 700 $homedirectory/.kube/config"
+    #export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+    #bashas "chmod 700 /etc/rancher/k3s/k3s.yaml"
+    printInfo "Setting up NGINX Ingress"
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
+  fi
+}
+
 microk8sInstall() {
   if [ "$microk8s_install" = true ]; then
     printInfoSection "Installing Microkubernetes with Kubernetes Version $MICROK8S_CHANNEL"
@@ -534,23 +558,27 @@ microk8sInstall() {
     homedirectory=$(eval echo ~$USER)
     bashas "mkdir $homedirectory/.kube"
     bashas "microk8s.config > $homedirectory/.kube/config"
-    bashas "chmod 700 $homedirectory/.kube/config"
+    bashas "chmod 644 $homedirectory/.kube/config"
   fi
 }
 
 microk8sStart() {
-  printInfoSection "Starting Microk8s"
-  bashas 'microk8s.start'
+  if [ "$microk8s_install" = true ]; then
+    printInfoSection "Starting Microk8s"
+    bashas 'microk8s.start'
+  fi
 }
 
 microk8sEnableBasic() {
-  printInfoSection "Enable DNS, Storage, NGINX Ingress"
-  bashas 'microk8s.enable dns'
-  waitForAllPods
-  bashas 'microk8s.enable hostpath-storage'
-  waitForAllPods
-  bashas 'microk8s.enable ingress'
-  waitForAllPods
+  if [ "$microk8s_install" = true ]; then
+    printInfoSection "Enable DNS, Storage, NGINX Ingress"
+    bashas 'microk8s.enable dns'
+    waitForAllPods
+    bashas 'microk8s.enable hostpath-storage'
+    waitForAllPods
+    bashas 'microk8s.enable ingress'
+    waitForAllPods
+  fi
 }
 
 microk8sEnableDashboard() {
@@ -585,20 +613,8 @@ istioInstall() {
 
 helmInstall() {
   if [ "$helm_install" = true ]; then
-    printInfoSection "Installing HELM ${HELM_VERSION} & Client manually from binaries"
-    wget -q -O helm.tar.gz "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz"
-    tar -xvf helm.tar.gz
-    mv linux-amd64/helm /usr/local/bin/helm
-    printInfo "Adding Default repo for Helm"
-    bashas "helm repo add stable https://charts.helm.sh/stable"
-    printInfo "Adding Keptn repo for Helm"
-    bashas "helm repo add keptn https://charts.keptn.sh"
-    printInfo "Adding Jenkins repo for Helm"
-    bashas "helm repo add jenkins https://charts.jenkins.io"
-    printInfo "Adding GiteaCharts for Helm"
-    bashas "helm repo add gitea-charts https://dl.gitea.io/charts/"
-    printInfo "Updating Helm Repository"
-    bashas "helm repo update"
+    printInfoSection "Installing HELM from Snap"
+    snap install helm --classic
   fi
 }
 
@@ -976,15 +992,20 @@ printInstalltime() {
 
 printFlags() {
   printInfoSection "Function Flags values"
-  for i in {selected_bundle,verbose_mode,update_ubuntu,docker_install,k9s_install,webshell_install,microk8s_install,helm_microk8s_alias,setup_aliases,enable_k8dashboard,enable_registry,istio_install,helm_install,git_deploy,git_migrate,certmanager_install,certmanager_enable,keptn_install,keptn_install_qualitygates,keptn_examples_clone,resources_clone,dynatrace_deploy_classic,dynatrace_deploy_cloudnative,keptn_configure_monitoring,jenkins_deploy,keptn_bridge_disable_login,deploy_homepage,keptndemo_cartsload,keptndemo_unleash,keptndemo_unleash_configure,keptndemo_cartsonboard,expose_kubernetes_api,expose_kubernetes_dashboard,patch_kubernetes_dashboard,create_workshop_user,devlove_easytravel,instrument_nginx,TriggerUser}; do
+  for i in {selected_bundle,verbose_mode,update_ubuntu,docker_install,k9s_install,webshell_install,k3s_install,microk8s_install,helm_microk8s_alias,setup_aliases,enable_k8dashboard,enable_registry,istio_install,helm_install,git_deploy,git_migrate,certmanager_install,certmanager_enable,keptn_install,keptn_install_qualitygates,keptn_examples_clone,resources_clone,dynatrace_deploy_classic,dynatrace_deploy_cloudnative,keptn_configure_monitoring,jenkins_deploy,keptn_bridge_disable_login,deploy_homepage,keptndemo_cartsload,keptndemo_unleash,keptndemo_unleash_configure,keptndemo_cartsonboard,expose_kubernetes_api,expose_kubernetes_dashboard,patch_kubernetes_dashboard,create_workshop_user,devlove_easytravel,instrument_nginx,TriggerUser}; do
     echo "$i = ${!i}"
   done
+}
+
+removeK3s() {
+  printInfoSection "Remove & Purge K3s"
+  bash /usr/local/bin/k3s-uninstall.sh 
 }
 
 removeMicrok8s() {
   printInfoSection "Remove & Purge microk8s"
   printInfo "snap remove microk8s --purge"
-  sudo snap remove microk8s --purge
+  snap remove microk8s --purge
   printInfo "If you want a complete uninstall remove this directories:"
   printInfo "rm -rf $K8S_PLAY_DIR"
   printInfo "rm -rf $KEPTN_EXAMPLES_DIR"
@@ -1025,6 +1046,9 @@ doInstallation() {
 
   # Clone repo
   resourcesClone
+
+  # Installing SingleNode K8s Cluster
+  k3sInstall
 
   # Installing SingleNode K8s Cluster
   microk8sInstall
