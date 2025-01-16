@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    kubernetes.io/ingress.class: istio
+    spec.ingressClassName: istio
     # We allow HTTP and HTTPS
     #nginx.ingress.kubernetes.io/ssl-redirect: "false"
     # Instructs the controller to send TLS connections directly 

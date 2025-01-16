@@ -4,7 +4,7 @@ metadata:
   name: homepage-ingress
   namespace: default
   annotations:
-    kubernetes.io/ingress.class: public
+    spec.ingressClassName: nginx
     # We allow HTTP and HTTPS
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     # Instructs the controller to send TLS connections directly 

@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: etherpad-ingress
   annotations:
-    kubernetes.io/ingress.class: public
+    spec.ingressClassName: nginx
     #cert-manager.io/cluster-issuer: "letsencrypt"
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
