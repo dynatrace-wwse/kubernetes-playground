@@ -50,7 +50,7 @@ echo "${CYAN}Apps/Endpoints exposed via Ingress Gateway [kubectl get ing -A]:${N
 echo " press [Control] and click on the URL to open the Endpoint in your browser            "
 echo "------------------------------------------------------------------------------------${YELLOW}"
 #/snap/bin/kubectl get ing -A -o=jsonpath="{range .items[*]}{'-> http://'}{.spec.rules[0].host}{\"\t\"}{\"\n\"}{end}"
-/snap/bin/kubectl get ing -A
+/usr/local/bin/kubectl get ing -A
 echo "${NORMAL}------------------------------------------------------------------------------------"
 echo " To (un)deploy more apps go to /home/k8splay/apps/ "
 echo " example deploy simmplcommerce ${GREEN}cd /home/k8splay/apps/ && bash deploy-simplcommerce.sh${NORMAL} "
