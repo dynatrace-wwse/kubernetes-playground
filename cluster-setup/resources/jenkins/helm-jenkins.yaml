@@ -480,7 +480,7 @@ master:
     apiVersion: "extensions/v1beta1"
     labels: {}
     annotations: {}
-    # spec.ingressClassName: nginx
+    # kubernetes.io/ingress.class: "nginx"
     # kubernetes.io/tls-acme: "true"
     # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
     # path: "/jenkins"

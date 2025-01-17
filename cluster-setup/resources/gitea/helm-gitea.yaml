@@ -29,7 +29,7 @@ service:
 ingress:
   enabled: false
   annotations: {}
-    # spec.ingressClassName: nginx
+    # kubernetes.io/ingress.class: "nginx"
     # kubernetes.io/tls-acme: "true"
   hosts:
     - host: git.domain.placeholder
