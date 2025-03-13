@@ -1018,7 +1018,7 @@ removeMicrok8s() {
 doInstallation() {
   echo ""
   printInfoSection "Init Installation at  $(date) by user $(whoami)"
-  printInfo "Setting up Microk8s (SingleNode K8s Dev Cluster)"
+  printInfo "Setting up K3s (SingleNode K8s Dev Cluster)"
   echo ""
   printSystemInfo
   # Record Disk Usage
