@@ -6,7 +6,7 @@
 # ==================================================
 #      ----- Components Versions -----             #
 # ==================================================
-PLAY_RELEASE="main"
+PLAY_RELEASE="onboarding"
 
 #https://cert-manager.io/docs/release-notes/
 CERTMANAGER_VERSION=1.15.3
@@ -27,7 +27,6 @@ K3S_VERSION="v1.29.10+k3s1"
 
 MICROK8S_CHANNEL="1.32/stable"
 K8S_PLAY_REPO="https://github.com/dynatrace-wwse/kubernetes-playground.git"
-DEVLOVE_ET_REPO="https://github.com/dynatrace-perfclinics/devlove-easytravel-pipelines.git"
 
 # - The user to run the commands from. Will be overwritten when executing this shell with sudo, this is just needed when spinning machines programatically and running the script with root without an interactive shell
 USER="ubuntu"
@@ -35,10 +34,9 @@ USER="ubuntu"
 # Directories
 K8S_PLAY_DIR="/home/$USER/k8s-play"
 KEPTN_EXAMPLES_DIR="/home/$USER/examples"
-DEVLOVE_ET_DIR="/home/$USER/devlove-easytravel-pipelines"
 
 # - The user to run the commands from. Will be overwritten when executing this shell with sudo, this is just needed when spinning machines programatically and running the script with root without an interactive shell
-HOSTNAME="k8s-playground"
+HOSTNAME="se-k8s-onboarding"
 
 # Magic Domain - default magic domain. Can be overridden for e.g. .sslip.io 
 # It needs to start with . 
