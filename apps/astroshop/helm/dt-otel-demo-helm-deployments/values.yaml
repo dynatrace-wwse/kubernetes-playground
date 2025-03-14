@@ -7,7 +7,7 @@ opentelemetry-demo:
     loadgenerator:
       envOverrides:
         - name: LOCUST_HOST
-          value: "https://astroshop.35-177-159-64.nip.io"
+          value: "https://astroshop.18-130-93-230.nip.io"
     frontend:
       envOverrides:
       - name: DT_LOGLEVELCON # https://www.dynatrace.com/support/help/shortlink/agent-logging

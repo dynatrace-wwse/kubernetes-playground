@@ -261,7 +261,7 @@ opentelemetry-demo:
         annotations: {}
         ingressClassName: nginx
         hosts:
-          - host: "astroshop.35-177-159-64.nip.io"
+          - host: "astroshop.18-130-93-230.nip.io"
             paths:
               - path: /
                 pathType: ImplementationSpecific
