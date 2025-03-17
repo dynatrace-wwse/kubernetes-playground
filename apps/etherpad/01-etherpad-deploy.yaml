@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: etherpad
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: etherpad
+  template:
+    metadata:
+      labels:
+        app: etherpad
+    spec:
+      containers:
+      - image: etherpad/etherpad:1.7.5
+        name: etherpad
+        ports:
+        - containerPort: 9001
+          name: etherpad
+        volumeMounts:
+        - mountPath: /opt/etherpad/settings.json
+          name: config
+          subPath: settings.json
+      volumes:
+      - configMap:
+          name: etherpad
+        name: config
