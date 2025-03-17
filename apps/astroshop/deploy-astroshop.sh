@@ -31,4 +31,5 @@ helm dependency build ./helm/dt-otel-demo-helm
 
 kubectl create namespace astroshop
 
+echo "OTEL Conf url $DT_OTEL_ENDPOINT and token $DT_OTEL_API_TOKEN"  
 helm upgrade --install astroshop -f ./helm/dt-otel-demo-helm-deployments/values.yaml --set default.image.repository=docker.io/shinojosa/astroshop --set default.image.tag=1.12.0 --set collector_tenant_endpoint=$DT_OTEL_ENDPOINT --set collector_tenant_token=$DT_OTEL_API_TOKEN -n astroshop ./helm/dt-otel-demo-helm
