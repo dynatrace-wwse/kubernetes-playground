@@ -5,29 +5,24 @@ source ../util/loaddomain.sh
 # Load the functions
 source ../../cluster-setup/functions.sh
 
-# set the Email for Certmanager to work
-export CERTMANAGER_EMAIL=sergio@hinojosa.de
+dynatraceEvalReadSaveCredentials
+dynatrace_deploy_cloudnative=true
+dynatraceDeployOperator
 
 # enable the FF to install certmanager and call the functions
-certmanager_install=true; certmanager_enable=true ; certmanagerInstall && certmanagerEnable
+certmanager_install=true; certmanager_enable=true
 
-# Install Dynatrace
-helm install dynatrace-operator oci://public.ecr.aws/dynatrace/dynatrace-operator --create-namespace --namespace dynatrace --atomic
-
-# Set up Dynatrace variables
-export DT_OTEL_API_TOKEN=dt0c01.XX.YY
-export DT_OTEL_ENDPOINT=https://iid1110h.sprint.apps.dynatracelabs.com/api/v2/otlp
+certmanagerInstall && certmanagerEnable
 
 kubectl create namespace astroshop
-
-helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 
 ###
 # Instructions to install Astroshop with Helm Chart from R&D and images built in shinojos repo (including code modifications from R&D)
 ####
-
 sed -i 's~domain.placeholder~'"$DOMAIN"'~' helm/dt-otel-demo-helm/values.yaml
 sed -i 's~domain.placeholder~'"$DOMAIN"'~' helm/dt-otel-demo-helm-deployments/values.yaml
+
+helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 
 helm dependency build ./helm/dt-otel-demo-helm
 
