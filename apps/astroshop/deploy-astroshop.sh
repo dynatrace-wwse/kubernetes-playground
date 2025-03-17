@@ -5,16 +5,19 @@ source ../util/loaddomain.sh
 # Load the functions
 source ../../cluster-setup/functions.sh
 
-dynatraceEvalReadSaveCredentials
-dynatrace_deploy_cloudnative=true
-dynatraceDeployOperator
+echo "-------------------    "
+echo " Deploying Astroshop   "
+echo "-------------------    "
+# Dynatrace needs to be installed
 
+#dynatraceEvalReadSaveCredentials
+#dynatrace_deploy_cloudnative=true
+#dynatraceDeployOperator
+
+## Certmanager needs to be installed 
 # enable the FF to install certmanager and call the functions
-certmanager_install=true; certmanager_enable=true
-
-certmanagerInstall && certmanagerEnable
-
-kubectl create namespace astroshop
+#certmanager_install=true; certmanager_enable=true
+#certmanagerInstall && certmanagerEnable
 
 ###
 # Instructions to install Astroshop with Helm Chart from R&D and images built in shinojos repo (including code modifications from R&D)
