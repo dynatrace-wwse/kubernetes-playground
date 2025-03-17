@@ -670,7 +670,7 @@ keptndemoDeployCartsloadgenerator() {
 resourcesClone() {
   if [ "$resources_clone" = true ]; then
     printInfoSection "Clone Kubernetes-Play Resources in $K8S_PLAY_DIR"
-    bashas "git clone --branch $PLAY_RELEASE $K8S_PLAY_REPO $K8S_PLAY_DIR --single-branch"
+    bashas "git clone --branch $PLAY_RELEASE $K8S_PLAY_REPO $K8S_PLAY_DIR"
   fi
 }
 
