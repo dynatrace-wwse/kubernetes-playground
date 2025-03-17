@@ -6,7 +6,7 @@
 # ==================================================
 #      ----- Components Versions -----             #
 # ==================================================
-PLAY_RELEASE="onboarding"
+PLAY_RELEASE="main"
 
 #https://cert-manager.io/docs/release-notes/
 CERTMANAGER_VERSION=1.15.3
