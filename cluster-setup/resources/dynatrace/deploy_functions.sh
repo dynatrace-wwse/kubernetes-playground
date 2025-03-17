@@ -5,8 +5,29 @@ OPERATOR_VERSION="v1.4.0"
 OPERATOR_YAML="https://github.com/Dynatrace/dynatrace-operator/releases/download/$OPERATOR_VERSION/kubernetes.yaml"
 CSI_YAML="https://github.com/Dynatrace/dynatrace-operator/releases/download/$OPERATOR_VERSION/kubernetes-csi.yaml"
 
-deployOperator() {
 
+
+deployOperatorViaHelm(){
+
+  source credentials.sh
+  saveReadCredentials
+  DT_API_URL="$DT_TENANT/api"
+
+  # Read the actual hostname in case changed during instalation
+  CLUSTERNAME=$(hostname)
+
+  helm install dynatrace-operator oci://public.ecr.aws/dynatrace/dynatrace-operator --create-namespace --namespace dynatrace --atomic
+
+  # Save Dynatrace Secret
+  kubectl -n dynatrace create secret generic k8s-playground --from-literal="apiToken=$DT_API_TOKEN" --from-literal="dataIngestToken=$DT_INGEST_TOKEN"
+
+  generateDynakube
+
+}
+
+
+deployOperator() {
+    #TODO: is this needed?
     source credentials.sh
     saveReadCredentials
     DT_API_URL="$DT_TENANT/api"
@@ -31,23 +52,26 @@ deployOperator() {
 
     # Replace URL and name for CloudNative and Classic FS Deployment
     # Set HOSTNAME for the K8s Connection
+    
+}
 
+generateDynakube(){
     # Generate DynaKubeSkel with API URL
-    sed -e 's~apiUrl: https://ENVIRONMENTID.live.dynatrace.com/api~apiUrl: '"$DT_API_URL"'~' dynakube-skel.yaml >gen/dynakube-skel.yaml
+    sed -e 's~apiUrl: https://ENVIRONMENTID.live.dynatrace.com/api~apiUrl: '"$DT_API_URL"'~' dynakube-skel.yaml > gen/dynakube-skel.yaml
 
     # ClusterName for API
     sed -i 's~feature.dynatrace.com/automatic-kubernetes-api-monitoring-cluster-name: "CLUSTERNAME"~feature.dynatrace.com/automatic-kubernetes-api-monitoring-cluster-name: "'"$CLUSTERNAME"'"~g' gen/dynakube-skel.yaml
     # Networkzone
     sed -i 's~networkZone: CLUSTERNAME~networkZone: '$CLUSTERNAME'~g' gen/dynakube-skel.yaml
     # HostGroup
-    sed -i 's~--set-host-group=CLUSTERNAME~--set-host-group='$CLUSTERNAME'~g' gen/dynakube-skel.yaml
+    sed -i 's~hostGroup: CLUSTERNAME~hostGroup: '$CLUSTERNAME'~g' gen/dynakube-skel.yaml
     # ActiveGate Group
     sed -i 's~group: CLUSTERNAME~group: '$CLUSTERNAME'~g' gen/dynakube-skel.yaml
     # Create Dynakube for Classic 
     sed -e 's~MONITORINGMODE:~classicFullStack:~' gen/dynakube-skel.yaml >gen/dynakube-classic.yaml
     # Create Dynakube for CloudNative 
     sed -e 's~MONITORINGMODE:~cloudNativeFullStack:~' gen/dynakube-skel.yaml >gen/dynakube-cloudnative.yaml
-    
+
 }
 
 deployClassic() {
@@ -60,7 +84,6 @@ deployClassic() {
 
 deployCloudNative() {
 
-    kubectl -n dynatrace apply -f gen/microk8s-csi.yaml
     # Check if the Webhook has been created and is ready
     kubectl -n dynatrace wait pod --for=condition=ready --selector=app.kubernetes.io/name=dynatrace-operator,app.kubernetes.io/component=webhook --timeout=300s
 
@@ -82,9 +105,7 @@ uninstallDynatrace() {
     undeployDynakubes
 
     echo "Uninstalling Dynatrace"
-    kubectl delete -f $OPERATOR_YAML
-
-    kubectl -n dynatrace delete -f gen/microk8s-csi.yaml 2>/dev/null
+    helm uninstall dynatrace-operator -n dynatrace
 
     kubectl delete namespace dynatrace
 }
