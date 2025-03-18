@@ -414,20 +414,33 @@ setMotd() {
 # shellcheck disable=SC2120
 dynatraceEvalReadSaveCredentials() {
   printInfoSection "Dynatrace evaluating and reading/saving Credentials"
-  if [ -n "${TENANT}" ]; then
+  if [[ -n "${TENANT}" && -n "${DT_OTEL_API_TOKEN}" ]]; then
     DT_TENANT=$TENANT
     DT_API_TOKEN=$APITOKEN
     DT_INGEST_TOKEN=$INGESTTOKEN
-    printInfo "---Environment variables set, overriding & saving them ------"
+    DT_OTEL_API_TOKEN=$DT_OTEL_API_TOKEN
+    DT_OTEL_ENDPOINT=$DT_OTEL_ENDPOINT
+    printInfo "--- Variables set in the environment with Otel config, overriding & saving them ------"
     printInfo "Dynatrace Tenant: $DT_TENANT"
     printInfo "Dynatrace API Token: $DT_API_TOKEN"
     printInfo "Dynatrace Ingest Token: $DT_INGEST_TOKEN"
-    bashas "source $K8S_PLAY_DIR/cluster-setup/resources/dynatrace/credentials.sh && saveReadCredentials \"$DT_TENANT\" \"$DT_API_TOKEN\" \"$DT_INGEST_TOKEN\""
+    printInfo "Dynatrace Otel API Token: $DT_OTEL_API_TOKEN"
+    printInfo "Dynatrace Otel Endpoint: $DT_OTEL_ENDPOINT"
+    bashas "source $K8S_PLAY_DIR/cluster-setup/resources/dynatrace/credentials.sh && saveReadCredentials \"$DT_TENANT\" \"$DT_API_TOKEN\" \"$DT_INGEST_TOKEN\" \"$DT_OTEL_API_TOKEN\" \"$DT_OTEL_ENDPOINT\""
   elif [[ $# -eq 3 ]]; then
     DT_TENANT=$1
     DT_API_TOKEN=$2
     DT_INGEST_TOKEN=$3
     printInfo "--- Variables passed as arguments, overriding & saving them ------"
+    printInfo "Dynatrace Tenant: $DT_TENANT"
+    printInfo "Dynatrace API Token: $DT_API_TOKEN"
+    printInfo "Dynatrace Ingest Token: $DT_INGEST_TOKEN"
+    bashas "source $K8S_PLAY_DIR/cluster-setup/resources/dynatrace/credentials.sh && saveReadCredentials \"$DT_TENANT\" \"$DT_API_TOKEN\" \"$DT_INGEST_TOKEN\""
+  elif [[ -n "${TENANT}" ]]; then
+    DT_TENANT=$TENANT
+    DT_API_TOKEN=$APITOKEN
+    DT_INGEST_TOKEN=$INGESTTOKEN
+    printInfo "--- Variables set in the environment with Otel config, overriding & saving them ------"
     printInfo "Dynatrace Tenant: $DT_TENANT"
     printInfo "Dynatrace API Token: $DT_API_TOKEN"
     printInfo "Dynatrace Ingest Token: $DT_INGEST_TOKEN"
