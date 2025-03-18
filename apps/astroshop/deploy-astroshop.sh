@@ -7,12 +7,13 @@ source ../util/loaddomain.sh
 source ../../cluster-setup/functions.sh
 source ../../cluster-setup/resources/dynatrace/credentials.sh
 
-# read the credentials and variables
-saveReadCredentials
+printInfoSection "Deploying Astroshop"
 
-echo "-------------------    "
-echo " Deploying Astroshop   "
-echo "-------------------    "
+# read the credentials and variables
+saveReadCredentials 
+
+# To override the Dynatrace values call the function with the following order
+#saveReadCredentials $DT_TENANT $DT_API_TOKEN $DT_INGEST_TOKEN $DT_OTEL_API_TOKEN $DT_OTEL_ENDPOINT
 
 : <<'EOF'
 
@@ -42,6 +43,6 @@ echo "OTEL Configuration URL $DT_OTEL_ENDPOINT and Token $DT_OTEL_API_TOKEN"
 
 helm upgrade --install astroshop -f ./helm/dt-otel-demo-helm-deployments/values.yaml --set default.image.repository=docker.io/shinojosa/astroshop --set default.image.tag=1.12.0 --set collector_tenant_endpoint=$DT_OTEL_ENDPOINT --set collector_tenant_token=$DT_OTEL_API_TOKEN -n astroshop ./helm/dt-otel-demo-helm
 
+printInfo "Astroshop available at: "
 
-echo "Astroshop available at:"
 kubectl get ing -n astroshop
