@@ -3,22 +3,29 @@
 source ../util/loaddomain.sh
 
 # Load the functions
+# Read the variables
 source ../../cluster-setup/functions.sh
+source ../../cluster-setup/resources/dynatrace/credentials.sh
+
+# read the credentials and variables
+saveReadCredentials
 
 echo "-------------------    "
 echo " Deploying Astroshop   "
 echo "-------------------    "
-# Dynatrace needs to be installed
 
-dynatraceEvalReadSaveCredentials
-#dynatrace_deploy_cloudnative=true
-#dynatraceDeployOperator
+: <<'EOF'
+
+# Dynatrace needs to be installed,
+# achieved with this flag dynatrace_deploy_cloudnative=true
+# DT_OTEL_API_TOKEN and DT_OTEL_ENDPOINT are exported
 
 ## Certmanager needs to be installed 
 # enable the FF to install certmanager and call the functions
 #certmanager_install=true; certmanager_enable=true
 #certmanagerInstall && certmanagerEnable
-: <<'EOF'
+EOF
+
 ###
 # Instructions to install Astroshop with Helm Chart from R&D and images built in shinojos repo (including code modifications from R&D)
 ####
@@ -31,9 +38,10 @@ helm dependency build ./helm/dt-otel-demo-helm
 
 kubectl create namespace astroshop
 
-echo "OTEL Conf url $DT_OTEL_ENDPOINT and token $DT_OTEL_API_TOKEN"  
-helm upgrade --install astroshop -f ./helm/dt-otel-demo-helm-deployments/values.yaml --set default.image.repository=docker.io/shinojosa/astroshop --set default.image.tag=1.12.0 --set collector_tenant_endpoint=$DT_OTEL_ENDPOINT --set collector_tenant_token=$DT_OTEL_API_TOKEN -n astroshop ./helm/dt-otel-demo-helm
-'''
-EOF
+echo "OTEL Configuration URL $DT_OTEL_ENDPOINT and Token $DT_OTEL_API_TOKEN"  
 
-echo "finish"
+helm upgrade --install astroshop -f ./helm/dt-otel-demo-helm-deployments/values.yaml --set default.image.repository=docker.io/shinojosa/astroshop --set default.image.tag=1.12.0 --set collector_tenant_endpoint=$DT_OTEL_ENDPOINT --set collector_tenant_token=$DT_OTEL_API_TOKEN -n astroshop ./helm/dt-otel-demo-helm
+
+
+echo "Astroshop available at:"
+kubectl get ing -n astroshop
