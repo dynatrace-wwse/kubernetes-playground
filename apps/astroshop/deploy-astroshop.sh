@@ -43,6 +43,12 @@ echo "OTEL Configuration URL $DT_OTEL_ENDPOINT and Token $DT_OTEL_API_TOKEN"
 
 helm upgrade --install astroshop -f ./helm/dt-otel-demo-helm-deployments/values.yaml --set default.image.repository=docker.io/shinojosa/astroshop --set default.image.tag=1.12.0 --set collector_tenant_endpoint=$DT_OTEL_ENDPOINT --set collector_tenant_token=$DT_OTEL_API_TOKEN -n astroshop ./helm/dt-otel-demo-helm
 
+printInfo "Stopping all cronjobs from Demo Live since they are not needed with this scenario"
+
+kubectl get cronjobs -n astroshop -o json | jq -r '.items[] | .metadata.name' | xargs -I {} kubectl patch cronjob {} -n astroshop --patch '{"spec": {"suspend": true}}'
+
+kubectl get cronjobs -n astroshop
+
 printInfo "Astroshop available at: "
 
 kubectl get ing -n astroshop
