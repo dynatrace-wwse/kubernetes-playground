@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-travel
+  namespace: ai-travel
+spec:
+  type: ClusterIP
+  selector:
+    name: ai-travel
+  ports:
+    - port: 80
+      name: http
+      targetPort: 8080
+      protocol: TCP

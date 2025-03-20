@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-travel
+  namespace: ai-travel
+spec:
+  selector:
+    matchLabels:
+      name: ai-travel
+  template:
+    metadata:
+      labels:
+        name: ai-travel
+    spec:
+      containers:
+        - name: ai-travel
+          image: thisthatdc/travel-advisor-simulation:v0.4.11
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: OTEL_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: otel-endpoint
+                  key: endpoint
+            - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
+              value: "delta"
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: secrets
+              readOnly: true
+              mountPath: "/etc/secrets"
+      volumes:
+        - name: secrets
+          projected:
+            sources:
+              - secret:
+                  name: dynatrace
