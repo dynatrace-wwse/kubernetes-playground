@@ -15,18 +15,6 @@ saveReadCredentials
 # To override the Dynatrace values call the function with the following order
 #saveReadCredentials $DT_TENANT $DT_API_TOKEN $DT_INGEST_TOKEN $DT_OTEL_API_TOKEN $DT_OTEL_ENDPOINT
 
-: <<'EOF'
-
-# Dynatrace needs to be installed,
-# achieved with this flag dynatrace_deploy_cloudnative=true
-# DT_OTEL_API_TOKEN and DT_OTEL_ENDPOINT are exported
-
-## Certmanager needs to be installed 
-# enable the FF to install certmanager and call the functions
-#certmanager_install=true; certmanager_enable=true
-#certmanagerInstall && certmanagerEnable
-EOF
-
 kubectl create namespace ai-travel
 OTLP_ENDPOINT="${DT_TENANT}"
 if [[ $OTLP_ENDPOINT == */ ]]
@@ -40,20 +28,17 @@ fi
 
 echo "Configuration URL $OTLP_ENDPOINT and OTel Token $DT_OTEL_API_TOKEN"  
 
-exit 1
-
 kubectl create secret generic dynatrace --from-literal token=$DT_OTEL_API_TOKEN -n ai-travel
-kubectl create secret generic otel-endpoint --from-literal endpoint=$DT_TENANT -n ai-travel
+kubectl create secret generic otel-endpoint --from-literal endpoint=$OTLP_ENDPOINT -n ai-travel
 
 ###
 # Patch the domain name with the real one
 ####
-sed 's~domain.placeholder~'"$DOMAIN"'~' ./ai-travel/ingress.template > ./ai-travel/ingress.yaml
+sed 's~domain.placeholder~'"$DOMAIN"'~' ./ingress.template > ./manifest/ingress.yaml
 
-kubectl apply -f ./ai-travel
+kubectl apply -f manifest/
 
 printInfo "Deployment of AI Travel done."
-
 
 printInfo "AI Travel available at: "
 
