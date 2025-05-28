@@ -25,6 +25,8 @@ TEASER_IMAGE="shinojosa/k8splaywebshell:v1.1"
 
 K3S_VERSION="v1.29.10+k3s1"
 
+HELM_VERSION="v3.17.0"
+
 MICROK8S_CHANNEL="1.32/stable"
 K8S_PLAY_REPO="https://github.com/dynatrace-wwse/kubernetes-playground.git"
 
@@ -612,8 +614,12 @@ istioInstall() {
 
 helmInstall() {
   if [ "$helm_install" = true ]; then
-    printInfoSection "Installing HELM from Snap"
-    snap install helm --classic
+    printInfoSection "Installing HELM version $HELM_VERSION via curl"
+    curl -LO https://get.helm.sh/helm-$HELM_VERSION-linux-amd64.tar.gz \
+    && tar -zxvf helm-$HELM_VERSION-linux-amd64.tar.gz \
+    && sudo mv linux-amd64/helm /usr/local/bin/helm \
+    && chmod +x /usr/local/bin/helm \
+    && rm -rf helm-$HELM_VERSION-linux-amd64.tar.gz linux-amd64 
   fi
 }
 
