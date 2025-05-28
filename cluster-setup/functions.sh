@@ -6,7 +6,7 @@
 # ==================================================
 #      ----- Components Versions -----             #
 # ==================================================
-PLAY_RELEASE="onboarding"
+PLAY_RELEASE="main"
 
 #https://cert-manager.io/docs/release-notes/
 CERTMANAGER_VERSION=1.15.3
@@ -24,6 +24,8 @@ TEASER_IMAGE="shinojosa/k8splaywebshell:v1.1"
 # snap info microk8s
 
 K3S_VERSION="v1.29.10+k3s1"
+
+HELM_VERSION="v3.17.0"
 
 MICROK8S_CHANNEL="1.32/stable"
 K8S_PLAY_REPO="https://github.com/dynatrace-wwse/kubernetes-playground.git"
@@ -414,20 +416,33 @@ setMotd() {
 # shellcheck disable=SC2120
 dynatraceEvalReadSaveCredentials() {
   printInfoSection "Dynatrace evaluating and reading/saving Credentials"
-  if [ -n "${TENANT}" ]; then
+  if [[ -n "${TENANT}" && -n "${DT_OTEL_API_TOKEN}" ]]; then
     DT_TENANT=$TENANT
     DT_API_TOKEN=$APITOKEN
     DT_INGEST_TOKEN=$INGESTTOKEN
-    printInfo "---Environment variables set, overriding & saving them ------"
+    DT_OTEL_API_TOKEN=$DT_OTEL_API_TOKEN
+    DT_OTEL_ENDPOINT=$DT_OTEL_ENDPOINT
+    printInfo "--- Variables set in the environment with Otel config, overriding & saving them ------"
     printInfo "Dynatrace Tenant: $DT_TENANT"
     printInfo "Dynatrace API Token: $DT_API_TOKEN"
     printInfo "Dynatrace Ingest Token: $DT_INGEST_TOKEN"
-    bashas "source $K8S_PLAY_DIR/cluster-setup/resources/dynatrace/credentials.sh && saveReadCredentials \"$DT_TENANT\" \"$DT_API_TOKEN\" \"$DT_INGEST_TOKEN\""
+    printInfo "Dynatrace Otel API Token: $DT_OTEL_API_TOKEN"
+    printInfo "Dynatrace Otel Endpoint: $DT_OTEL_ENDPOINT"
+    bashas "source $K8S_PLAY_DIR/cluster-setup/resources/dynatrace/credentials.sh && saveReadCredentials \"$DT_TENANT\" \"$DT_API_TOKEN\" \"$DT_INGEST_TOKEN\" \"$DT_OTEL_API_TOKEN\" \"$DT_OTEL_ENDPOINT\""
   elif [[ $# -eq 3 ]]; then
     DT_TENANT=$1
     DT_API_TOKEN=$2
     DT_INGEST_TOKEN=$3
     printInfo "--- Variables passed as arguments, overriding & saving them ------"
+    printInfo "Dynatrace Tenant: $DT_TENANT"
+    printInfo "Dynatrace API Token: $DT_API_TOKEN"
+    printInfo "Dynatrace Ingest Token: $DT_INGEST_TOKEN"
+    bashas "source $K8S_PLAY_DIR/cluster-setup/resources/dynatrace/credentials.sh && saveReadCredentials \"$DT_TENANT\" \"$DT_API_TOKEN\" \"$DT_INGEST_TOKEN\""
+  elif [[ -n "${TENANT}" ]]; then
+    DT_TENANT=$TENANT
+    DT_API_TOKEN=$APITOKEN
+    DT_INGEST_TOKEN=$INGESTTOKEN
+    printInfo "--- Variables set in the environment, overriding & saving them ------"
     printInfo "Dynatrace Tenant: $DT_TENANT"
     printInfo "Dynatrace API Token: $DT_API_TOKEN"
     printInfo "Dynatrace Ingest Token: $DT_INGEST_TOKEN"
@@ -612,8 +627,12 @@ istioInstall() {
 
 helmInstall() {
   if [ "$helm_install" = true ]; then
-    printInfoSection "Installing HELM from Snap"
-    snap install helm --classic
+    printInfoSection "Installing HELM version $HELM_VERSION via curl"
+    curl -LO https://get.helm.sh/helm-$HELM_VERSION-linux-amd64.tar.gz \
+    && tar -zxvf helm-$HELM_VERSION-linux-amd64.tar.gz \
+    && sudo mv linux-amd64/helm /usr/local/bin/helm \
+    && chmod +x /usr/local/bin/helm \
+    && rm -rf helm-$HELM_VERSION-linux-amd64.tar.gz linux-amd64 
   fi
 }
 
@@ -670,7 +689,7 @@ keptndemoDeployCartsloadgenerator() {
 resourcesClone() {
   if [ "$resources_clone" = true ]; then
     printInfoSection "Clone Kubernetes-Play Resources in $K8S_PLAY_DIR"
-    bashas "git clone --branch $PLAY_RELEASE $K8S_PLAY_REPO $K8S_PLAY_DIR --single-branch"
+    bashas "git clone --branch $PLAY_RELEASE $K8S_PLAY_REPO $K8S_PLAY_DIR"
   fi
 }
 
@@ -789,7 +808,7 @@ dynatraceDeployOperator() {
     printInfoSection "Deploying Dynatrace Operator"
     # Deploy Operator
 
-    bashas "cd $K8S_PLAY_DIR/cluster-setup/resources/dynatrace && source deploy_functions.sh && deployOperator"
+    bashas "cd $K8S_PLAY_DIR/cluster-setup/resources/dynatrace && source deploy_functions.sh && deployOperatorViaHelm"
     waitForAllPods dynatrace
 
     if [ "$dynatrace_deploy_classic" = true ]; then

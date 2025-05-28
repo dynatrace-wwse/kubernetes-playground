@@ -1,4 +1,4 @@
-ingressHostUrl: "astroshop.35-177-159-64.nip.io"
+ingressHostUrl: "astroshop.domain.placeholder"
 collector_tenant_endpoint: donotstore
 collector_tenant_token: donotstore
 
@@ -7,7 +7,7 @@ opentelemetry-demo:
     loadgenerator:
       envOverrides:
         - name: LOCUST_HOST
-          value: "https://astroshop.35-177-159-64.nip.io"
+          value: "https://astroshop.domain.placeholder"
     frontend:
       envOverrides:
       - name: DT_LOGLEVELCON # https://www.dynatrace.com/support/help/shortlink/agent-logging

@@ -1,4 +1,4 @@
-apiVersion: dynatrace.com/v1beta1
+apiVersion: dynatrace.com/v1beta3
 kind: DynaKube
 metadata:
   name: k8s-playground
@@ -6,6 +6,7 @@ metadata:
   annotations:
     feature.dynatrace.com/automatic-kubernetes-api-monitoring: "true"
     feature.dynatrace.com/automatic-kubernetes-api-monitoring-cluster-name: "CLUSTERNAME"
+    feature.dynatrace.com/k8s-app-enabled: "true"
 spec:
   # Dynatrace apiUrl including the `/api` path at the end.
   # For SaaS, set `YOUR_ENVIRONMENT_ID` to your environment ID.
@@ -63,6 +64,8 @@ spec:
   #    - key: app
   #      operator: In
   #      values: [my-frontend, my-backend, my-database]
+  metadataEnrichment:
+    enabled: true
 
   # Configuration for OneAgent instances
   #
@@ -70,6 +73,8 @@ spec:
     # Enables cloud-native fullstack monitoring and changes its settings
     # Cannot be used in conjunction with classic fullstack monitoring, application-only monitoring or host monitoring
     #
+    hostGroup: CLUSTERNAME
+    
     MONITORINGMODE:
       # Optional: Sets a node selector to control on which nodes the OneAgent will be deployed.
       # For more information on node selectors, see https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/
@@ -117,8 +122,8 @@ spec:
       #
       # args: []
       
-      args:
-        - --set-host-group=CLUSTERNAME
+      #args:
+      #  - --set-host-group=CLUSTERNAME
 
       # Optional: Enables or disables automatic updates of OneAgent pods
       # By default, if a new version is available, the OneAgent pods are restart to apply the update
@@ -276,3 +281,10 @@ spec:
     # For more information on TopologySpreadConstraints, see https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
     #
     # topologySpreadConstraints: []
+  templates:
+    extensionExecutionController:
+      imageRef:
+        repository: public.ecr.aws/dynatrace/dynatrace-eec
+        tag: 1.305.99.20250115-133014
+  extensions: {}
+  logMonitoring: {}

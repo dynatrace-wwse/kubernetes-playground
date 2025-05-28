@@ -6,20 +6,19 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-  name: astroshop-ingress
+  name: ai-travel-ingress
 spec:
   rules:
-  - host: astroshop.domain.placeholder
+  - host: ai-travel.domain.placeholder
     http:
       paths:
       - backend:
           service:
-            name: astroshop-frontendproxy
+            name: ai-travel
             port:
               number: 8080
         path: /
         pathType: Prefix
   tls:
   - hosts:
-    - astroshop.domain.placeholder
-    #secretName: wdldt-production-astro-tls
+    - ai-travel.domain.placeholder

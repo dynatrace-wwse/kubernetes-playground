@@ -1,25 +1,25 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  namespace: ai-travel
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-  name: astroshop-ingress
+  name: ai-travel-ingress
 spec:
   rules:
-  - host: astroshop.domain.placeholder
+  - host: ai-travel.35-179-152-135.nip.io
     http:
       paths:
       - backend:
           service:
-            name: astroshop-frontendproxy
+            name: ai-travel
             port:
               number: 8080
         path: /
         pathType: Prefix
-  tls:
-  - hosts:
-    - astroshop.domain.placeholder
-    #secretName: wdldt-production-astro-tls
+  #tls:
+  #- hosts:
+  # - ai-travel.35-179-152-135.nip.io
