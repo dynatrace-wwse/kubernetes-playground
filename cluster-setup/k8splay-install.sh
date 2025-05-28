@@ -59,7 +59,7 @@ CERTMANAGER_EMAIL=
 #      ----- Functions Location -----              #
 # ==================================================
 # - Kubernetes Playground release
-PLAY_RELEASE="main"
+PLAY_RELEASE="onboard"
 # - Functions file location
 FUNCTIONS_FILE_REPO="https://raw.githubusercontent.com/dynatrace-wwse/kubernetes-playground/${PLAY_RELEASE}/cluster-setup/functions.sh"
 
